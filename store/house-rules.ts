@@ -1,17 +1,25 @@
 import { ActionTree, MutationTree } from 'vuex'
-import { ApiResponse, ApiResponseWithPagination } from '~/dto/api-response.dto'
+import {
+  ApiResponse,
+  ApiResponseWithPagination,
+  Pagination,
+} from '~/dto/api-response.dto'
 import { CreateHouseRuleDto, HouseRule } from '~/dto/house-rule.dto'
 
 export const state = () => ({
   rules: [] as HouseRule[],
   rule: {} as HouseRule,
+  pagination: {} as Pagination,
 })
 
 export type RootState = ReturnType<typeof state>
 
 export const mutations: MutationTree<RootState> = {
   SET_RULE: (state, rule: HouseRule) => (state.rule = rule),
-  SET_RULES: (state, rules: HouseRule[]) => (state.rules = rules),
+  SET_RULES: (state, res: ApiResponseWithPagination<HouseRule>) => {
+    state.rules = res.data.entities
+    state.pagination = res.data.pagination
+  },
 }
 
 export enum HouseRulesMutations {
@@ -32,7 +40,7 @@ export const actions: ActionTree<RootState, RootState> = {
     const response = await this.$axios.$get<
       ApiResponseWithPagination<HouseRule>
     >('/house_rules')
-    commit(HouseRulesMutations.SET_RULES, response.data.entities)
+    commit(HouseRulesMutations.SET_RULES, response)
   },
   async FETCH_RULE({ commit }, id: number) {
     const response = await this.$axios.$get<ApiResponse<HouseRule>>(

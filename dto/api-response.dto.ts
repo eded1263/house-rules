@@ -14,9 +14,9 @@ export interface ApiResponseWithPagination<T = null> {
   message: string
   data: {
     entities: T[]
+    pagination: Pagination
   }
   success: boolean
-  pagination: Pagination
 }
 
 export interface ApiResponse<T = null> {
